@@ -1,15 +1,31 @@
 const inputEl = document.querySelector("input");
-const buttonEl = document.querySelector("button");
+const button = document.querySelector("button");
 const timerEl = document.querySelector("span");
 
-// Напишите реализацию createTimerAnimator
-// который будет анимировать timerEl
+let timerId;
+
+function toHoursAndMinutes(totalSeconds) {
+  const totalMinutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  return `${hours}:${minutes}:${seconds}`;
+}
 
 const createTimerAnimator = (seconds) => {
-  for (seconds; seconds > 0; seconds--) {}
+  timerId = setInterval(() => {
+    seconds > 0 ? (timerEl.innerHTML = toHoursAndMinutes(--seconds)) : null;
+  }, 1000);
 };
 
-const animateTimer = createTimerAnimator();
+function checkEmptyTimer() {
+  if (timerId) {
+    clearInterval(timerId);
+  }
+}
+
+const animateTimer = createTimerAnimator;
 
 inputEl.addEventListener("input", (e) => {
   const regexp = new RegExp("^[0-9]+$");
@@ -19,10 +35,10 @@ inputEl.addEventListener("input", (e) => {
   }
 });
 
-buttonEl.addEventListener("click", () => {
+button.addEventListener("click", () => {
+  checkEmptyTimer();
   const seconds = Number(inputEl.value);
-
+  timerEl.innerHTML = toHoursAndMinutes(seconds);
   animateTimer(seconds);
-
   inputEl.value = "";
 });
