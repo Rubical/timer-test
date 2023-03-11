@@ -11,18 +11,29 @@ function toHoursAndMinutes(totalSeconds) {
   const seconds = totalSeconds % 60;
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
-
   return `${hours}:${minutes}:${seconds}`;
 }
 
-function timerRunning() {
+function timerStarted() {
   buttonStart.style.display = "none";
   buttonStop.style.display = "inline-block";
+  inputEl.setAttribute("disabled", "disabled");
+  timerEl.innerHTML = toHoursAndMinutes(localStorage.getItem("seconds"));
+  animateTimer(localStorage.getItem("seconds"));
+  inputEl.value = "";
 }
 
 function timerStopped() {
   buttonStart.style.display = "inline-block";
   buttonStop.style.display = "none";
+  inputEl.removeAttribute("disabled", "disabled");
+  clearInterval(timerId);
+}
+
+function checkEmptyTimer() {
+  if (timerId) {
+    clearInterval(timerId);
+  }
 }
 
 const createTimerAnimator = (seconds) => {
@@ -33,18 +44,12 @@ const createTimerAnimator = (seconds) => {
     ) {
       localStorage.setItem("seconds", --seconds);
       timerEl.innerHTML = toHoursAndMinutes(localStorage.getItem("seconds"));
-    } else if (localStorage.getItem("seconds") == 0) {
+    } else if (localStorage.getItem("seconds") === "0") {
       timerEl.innerHTML = "hh:mm:ss";
-      clearInterval(timerId);
+      timerStopped();
     }
   }, 1000);
 };
-
-function checkEmptyTimer() {
-  if (timerId) {
-    clearInterval(timerId);
-  }
-}
 
 const animateTimer = createTimerAnimator;
 
@@ -58,27 +63,19 @@ inputEl.addEventListener("input", (e) => {
 
 buttonStart.addEventListener("click", () => {
   if (inputEl.value) {
-    timerRunning();
-    localStorage.setItem("seconds", Number(inputEl.value));
-    timerEl.innerHTML = toHoursAndMinutes(localStorage.getItem("seconds"));
+    localStorage.setItem("seconds", inputEl.value);
+    timerStarted();
   } else if (localStorage.getItem("seconds")) {
-    timerRunning();
-    timerEl.innerHTML = toHoursAndMinutes(localStorage.getItem("seconds"));
+    timerStarted();
   }
-  animateTimer(localStorage.getItem("seconds"));
-  inputEl.value = "";
-});
-
-buttonReset.addEventListener("click", () => {
-  clearInterval(timerId);
-  timerStopped();
-  localStorage.removeItem("seconds");
-  timerEl.innerHTML = "hh:mm:ss";
 });
 
 buttonStop.addEventListener("click", () => {
-  if (timerId) {
-    clearInterval(timerId);
-    timerStopped();
-  }
+  timerStopped();
+});
+
+buttonReset.addEventListener("click", () => {
+  localStorage.removeItem("seconds");
+  timerStopped();
+  timerEl.innerHTML = "hh:mm:ss";
 });
