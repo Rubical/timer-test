@@ -6,11 +6,19 @@ const timerEl = document.querySelector("span");
 
 let timerId;
 
+function makeTwoDigits(num) {
+  if (num >= 0 && num <= 9) {
+    return "0" + num;
+  } else {
+    return num;
+  }
+}
+
 function toHoursAndMinutes(totalSeconds) {
   const totalMinutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
+  const seconds = makeTwoDigits(totalSeconds % 60);
+  const hours = makeTwoDigits(Math.floor(totalMinutes / 60));
+  const minutes = makeTwoDigits(totalMinutes % 60);
   return `${hours}:${minutes}:${seconds}`;
 }
 
